@@ -4,6 +4,32 @@
 
 #include <iostream>
 
+int g_windowSizeW = 640;
+int g_windowSizeH = 480;
+
+void glfwWindowSizeCallback(GLFWwindow *pWindow, int width, int height)
+{
+  g_windowSizeW = width;
+  g_windowSizeH = height;
+
+  glViewport(0, 0, width, height);
+
+  std::cout << "Resize window: (w = " << width << "; h = " << height << "; )" << std::endl;
+}
+
+void glfwKeyCallback(GLFWwindow *pWindow, int key, int scancode, int action, int mode)
+{
+  std::cout << "Hook key: " << key
+            << ", scancode: " << scancode
+            << ", action: " << action
+            << ", mode: " << mode << std::endl;
+
+  if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+  {
+    glfwSetWindowShouldClose(pWindow, GL_TRUE);
+  }
+}
+
 /// nvidia bind
 extern "C"
 {
@@ -24,7 +50,7 @@ int main(void)
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-  GLFWwindow *pWindow = glfwCreateWindow(640, 480, "3D0", nullptr, nullptr);
+  GLFWwindow *pWindow = glfwCreateWindow(g_windowSizeW, g_windowSizeH, "3D0", nullptr, nullptr);
   if (!pWindow)
   {
 
@@ -33,6 +59,9 @@ int main(void)
     glfwTerminate();
     return -1;
   }
+
+  glfwSetWindowSizeCallback(pWindow, glfwWindowSizeCallback);
+  glfwSetKeyCallback(pWindow, glfwKeyCallback);
 
   glfwMakeContextCurrent(pWindow);
 
@@ -50,13 +79,11 @@ int main(void)
 
   while (!glfwWindowShouldClose(pWindow))
   {
-    /* Render here */
+
     glClear(GL_COLOR_BUFFER_BIT);
 
-    /* Swap front and back buffers */
     glfwSwapBuffers(pWindow);
 
-    /* Poll for and process events */
     glfwPollEvents();
   }
 

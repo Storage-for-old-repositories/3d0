@@ -4,6 +4,8 @@
 
 #include <iostream>
 
+#include "Renderer/ShaderProgram.h"
+
 GLfloat point[] = {
     0.0f,
     0.5f,
@@ -126,23 +128,35 @@ int main(void)
 
   glClearColor(0, 1, 0, 1);
 
+  //
+  std::string vShader(vertexShader);
+  std::string fShader(fragmentShader);
+
+  Renderer::ShaderProgram shaderProgram(vShader, fShader);
+
+  if (!shaderProgram.isCompiled())
+  {
+    std::cerr << "Can't create shader program!" << std::endl;
+    return -1;
+  }
+
   // shader compile (without errors handling)
 
-  GLuint vs = glCreateShader(GL_VERTEX_SHADER);
-  glShaderSource(vs, 1, &vertexShader, nullptr);
-  glCompileShader(vs);
+  // GLuint vs = glCreateShader(GL_VERTEX_SHADER);
+  // glShaderSource(vs, 1, &vertexShader, nullptr);
+  // glCompileShader(vs);
 
-  GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(fs, 1, &fragmentShader, nullptr);
-  glCompileShader(fs);
+  // GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
+  // glShaderSource(fs, 1, &fragmentShader, nullptr);
+  // glCompileShader(fs);
 
-  GLuint sp = glCreateProgram();
-  glAttachShader(sp, vs);
-  glAttachShader(sp, fs);
-  glLinkProgram(sp);
+  // GLuint sp = glCreateProgram();
+  // glAttachShader(sp, vs);
+  // glAttachShader(sp, fs);
+  // glLinkProgram(sp);
 
-  glDeleteShader(vs);
-  glDeleteShader(fs);
+  // glDeleteShader(vs);
+  // glDeleteShader(fs);
 
   // vbo
 
@@ -175,7 +189,7 @@ int main(void)
 
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glUseProgram(sp);
+    shaderProgram.use();
     glBindVertexArray(vao);
     glDrawArrays(GL_TRIANGLES, 0, 3);
 
